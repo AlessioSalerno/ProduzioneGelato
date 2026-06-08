@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Piano di Produzione Gelato - Avanzato</title>
+    <title>Piano di Produzione Gelato - Mobile & PC</title>
     <style>
-        /* Configurazione per il foglio orizzontale e stile generale */
+        /* Configurazione generale */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 20px;
+            margin: 0;
+            padding: 10px;
             background-color: #f4f7f6;
             color: #333;
         }
@@ -17,15 +18,16 @@
             max-width: 1300px;
             margin: 0 auto;
             background: white;
-            padding: 30px;
+            padding: 15px;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
         }
 
         h1 {
             text-align: center;
             color: #2c3e50;
             margin-bottom: 20px;
+            font-size: 1.6rem;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
@@ -35,12 +37,13 @@
             border-bottom: 2px solid #34495e;
             padding-bottom: 5px;
             margin-top: 30px;
+            font-size: 1.4rem;
         }
 
-        /* Sezione Gestione Gusti e Inserimento in griglia */
+        /* Layout Responsivo (Mobile First: di base tutto in verticale) */
         .sezione-comandi {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
+            display: flex;
+            flex-direction: column;
             gap: 20px;
             margin-bottom: 30px;
         }
@@ -51,52 +54,67 @@
             border-radius: 6px;
         }
 
+        .box-gestione h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #34495e;
+            font-size: 1.1rem;
+        }
+
         .form-group {
             display: flex;
             flex-direction: column;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         .form-inline {
             display: flex;
-            gap: 10px;
-            align-items: flex-end;
-        }
-
-        .form-inline .form-group {
-            flex: 1;
-            margin-bottom: 0;
+            flex-direction: column;
+            gap: 12px;
         }
 
         label {
             font-size: 0.9rem;
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
             color: #555;
         }
 
         input, select {
-            padding: 8px;
+            padding: 12px; /* Più grande su mobile per facilitare il tocco */
             border: 1px solid #ccc;
             border-radius: 4px;
             font-size: 1rem;
+            background-color: #fff;
+            -webkit-appearance: none; /* Rimuove lo stile di default di iOS */
+            appearance: none;
         }
 
-        /* Pulsanti */
+        /* Sistemazione freccia select su iOS */
+        select {
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'><path d='M0 3l5 5 5-5z' fill='%23666'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 30px;
+        }
+
+        /* Pulsanti grandi per le dita */
         button {
-            padding: 9px 15px;
+            padding: 12px 18px;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 0.95rem;
+            font-size: 1rem;
             font-weight: bold;
             transition: background 0.2s;
+            display: inline-block;
+            text-align: center;
         }
 
         .btn-success { background-color: #27ae60; }
         .btn-success:hover { background-color: #219653; }
-        .btn-primary { background-color: #2980b9; }
+        .btn-primary { background-color: #2980b9; width: 100%; }
         .btn-primary:hover { background-color: #2471a3; }
         .btn-danger { background-color: #e74c3c; }
         .btn-danger:hover { background-color: #c0392b; }
@@ -106,7 +124,7 @@
         /* Lista Gusti */
         .lista-gusti-container {
             margin-top: 10px;
-            max-height: 120px;
+            max-height: 150px;
             overflow-y: auto;
             background: white;
             border: 1px solid #ddd;
@@ -118,75 +136,145 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 4px 8px;
+            padding: 8px;
             border-bottom: 1px solid #eee;
-            font-size: 0.9rem;
+            font-size: 1rem;
         }
 
-        /* Tabella Orizzontale */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            background: white;
+        /* ---- OTTIMIZZAZIONE TABELLA PER MOBILE ---- */
+        /* Di default su smartphone la tabella si trasforma in blocchi leggibili */
+        table, thead, tbody, tfoot, th, td, tr {
+            display: block;
         }
 
-        th, td {
-            border: 1px solid #bdc3c7;
+        thead tr {
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+        }
+
+        tr {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            margin-bottom: 15px;
             padding: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        td {
+            border: none;
+            position: relative;
+            padding-left: 45% !important;
+            text-align: right !important;
+            padding: 8px 4px;
+            border-bottom: 1px solid #eee;
+        }
+
+        td:last-child {
+            border-bottom: none;
+        }
+
+        /* Etichette per mobile inserite tramite i dati della tabella */
+        td::before {
+            content: attr(data-label);
+            position: absolute;
+            left: 10px;
+            width: 40%;
             text-align: left;
-        }
-
-        th {
-            background-color: #34495e;
-            color: white;
-            font-weight: 600;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        .totale-riga {
             font-weight: bold;
-            background-color: #eaeded;
+            color: #7f8c8d;
         }
 
         .Azioni {
-            text-align: center;
-            width: 140px;
+            text-align: center !important;
+            padding-left: 0 !important;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .Azioni::before {
+            display: none;
         }
 
         .table-btn {
-            padding: 4px 8px;
-            font-size: 0.8rem;
-            margin: 0 2px;
+            padding: 8px 16px;
+            font-size: 0.95rem;
+            flex: 1;
         }
 
-        /* CSS Specifico per la Stampa */
+        /* Riga del totale adattata a mobile */
+        .totale-riga tr {
+            background: #eaeded;
+        }
+        .totale-riga td {
+            padding-left: 10px !important;
+            text-align: center !important;
+            font-size: 1.1rem;
+        }
+        .totale-riga td::before {
+            display: none;
+        }
+
+        /* ---- DESKTOP LAYOUT (Schermi grandi dei PC o Tablet orizzontali) ---- */
+        @media id, screen and (min-width: 768px) {
+            body { padding: 20px; }
+            .container { padding: 30px; }
+            h1 { font-size: 2.2rem; }
+            
+            .sezione-comandi {
+                display: grid;
+                grid-template-columns: 1fr 2fr;
+                gap: 20px;
+            }
+
+            .form-inline {
+                flex-direction: row;
+                align-items: flex-end;
+            }
+
+            .form-inline .form-group {
+                flex: 1;
+                margin-bottom: 0;
+            }
+
+            .btn-primary { width: auto; }
+
+            /* Ripristino Tabella Classica Orizzontale su PC */
+            table { display: table; width: 100%; border-collapse: collapse; margin-top: 15px; }
+            thead { display: table-header-group; }
+            tbody { display: table-row-group; }
+            tfoot { display: table-footer-group; }
+            tr { display: table-row; background: none; border: none; margin-bottom: 0; padding: 0; box-shadow: none; }
+            th, td { display: table-cell; border: 1px solid #bdc3c7; padding: 10px; text-align: left !important; }
+            th { background-color: #34495e; color: white; font-weight: 600; }
+            tr:nth-child(even) { background-color: #f9f9f9; }
+            td::before { display: none; }
+            .Azioni { display: table-cell; width: 150px; text-align: center !important; }
+            .table-btn { padding: 4px 8px; font-size: 0.85rem; flex: none; margin: 0 2px; }
+            .totale-riga tr { background: none; }
+            .totale-riga td { text-align: left !important; font-size: 1rem; }
+        }
+
+        /* ---- CSS SPECIFICO PER LA STAMPA ---- */
         @media print {
-            @page {
-                size: landscape;
-                margin: 1cm;
-            }
-            body {
-                background: white;
-                margin: 0;
-            }
-            .sezione-comandi, .btn-primary, .Azioni, th:last-child {
-                display: none !important; /* Nasconde comandi e colonna azioni in stampa */
-            }
-            .container {
-                box-shadow: none;
-                padding: 0;
-                max-width: 100%;
-            }
-            th {
-                background-color: #34495e !important;
-                color: white !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
+            @page { size: landscape; margin: 1cm; }
+            body { background: white; padding: 0; margin: 0; }
+            .sezione-comandi, .btn-primary, .Azioni, th:last-child { display: none !important; }
+            .container { box-shadow: none; padding: 0; max-width: 100%; }
+            
+            /* Forza la visualizzazione a tabella classica anche se si stampa da mobile */
+            table { display: table !important; width: 100%; border-collapse: collapse; }
+            thead { display: table-header-group !important; }
+            tbody { display: table-row-group !important; }
+            tfoot { display: table-footer-group !important; }
+            tr { display: table-row !important; }
+            th, td { display: table-cell !important; border: 1px solid #bdc3c7 !important; padding: 10px !important; text-align: left !important; }
+            td::before { display: none !important; }
+            th { background-color: #34495e !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .totale-riga td { text-align: right !important; }
         }
     </style>
 </head>
@@ -207,22 +295,20 @@
                     <button class="btn-success" onclick="aggiungiGusto()">Aggiungi</button>
                 </div>
             </div>
-            <label>Gusti Attuali (Fai clic sulla X per eliminare):</label>
-            <div class="lista-gusti-container" id="lista-gusti">
-                </div>
+            <label>Gusti Attuali:</label>
+            <div class="lista-gusti-container" id="lista-gusti"></div>
         </div>
 
         <div class="box-gestione">
             <h3>2. Inserisci Produzione</h3>
-            <div class="form-inline" style="margin-bottom: 10px;">
+            <div class="form-inline" style="margin-bottom: 12px;">
                 <div class="form-group">
                     <label for="data">Data Produzione</label>
                     <input type="date" id="data">
                 </div>
                 <div class="form-group">
                     <label for="gusto-select">Gusto</label>
-                    <select id="gusto-select">
-                        </select>
+                    <select id="gusto-select"></select>
                 </div>
                 <div class="form-group">
                     <label for="formato">Formato</label>
@@ -259,32 +345,25 @@
                 <th class="Azioni">Azioni</th>
             </tr>
         </thead>
-        <tbody id="corpo-tabella">
-            </tbody>
+        <tbody id="corpo-tabella"></tbody>
         <tfoot>
             <tr class="totale-riga">
-                <td colspan="3" style="text-align: right;">Totale Vaschette Prodotte:</td>
-                <td id="totale-pezzi">0</td>
-                <td colspan="3"></td>
+                <td colspan="7" id="cella-totale" style="text-align: right; font-weight: bold;">Totale Vaschette Prodotte: <span id="totale-pezzi">0</span></td>
             </tr>
         </tfoot>
     </table>
 </div>
 
 <script>
-    // --- STATO INIZIALE DEI DATI (Caricamento da localStorage) ---
     let gusti = JSON.parse(localStorage.getItem('gelato_gusti')) || ["Fiordilatte", "Cioccolato", "Nocciola", "Pistacchio"];
     let produzioni = JSON.parse(localStorage.getItem('gelato_produzioni')) || [];
-    let indiceModifica = -1; // -1 significa che stiamo inserendo una nuova riga, altrimenti contiene l'indice della riga da modificare
+    let indiceModifica = -1;
 
-    // Imposta la data di oggi sul calendario
     document.getElementById('data').valueAsDate = new Date();
 
-    // Avvia l'applicazione caricando i dati salvati
     aggiornaInterfacciaGusti();
     renderTabellaProduzione();
 
-    // --- FUNZIONI PER I GUSTI ---
     function aggiornaInterfacciaGusti() {
         const listaContainer = document.getElementById('lista-gusti');
         const selectGusto = document.getElementById('gusto-select');
@@ -292,48 +371,40 @@
         listaContainer.innerHTML = '';
         selectGusto.innerHTML = '';
 
-        // Ordina i gusti alfabeticamente
         gusti.sort();
 
         gusti.forEach((gusto, index) => {
-            // Aggiungi alla lista di gestione
             const div = document.createElement('div');
             div.className = 'gusto-item';
-            div.innerHTML = `<span>${gusto}</span> <button class="btn-danger table-btn" onclick="eliminaGusto(${index})">X</button>`;
+            div.innerHTML = `<span>${gusto}</span> <button class="btn-danger" style="padding: 4px 10px; font-size:0.8rem;" onclick="eliminaGusto(${index})">X</button>`;
             listaContainer.appendChild(div);
 
-            // Aggiungi al menu a tendina della produzione
             const option = document.createElement('option');
             option.value = gusto;
             option.textContent = gusto;
             selectGusto.appendChild(option);
         });
 
-        // Salva la lista aggiornata
         localStorage.setItem('gelato_gusti', JSON.stringify(gusti));
     }
 
     function aggiungiGusto() {
         const input = document.getElementById('nuovo-gusto');
         const nuovoGusto = input.value.trim();
-
         if(nuovoGusto === "") return alert("Inserisci un nome valido!");
         if(gusti.includes(nuovoGusto)) return alert("Questo gusto esiste già!");
-
         gusti.push(nuovoGusto);
         input.value = "";
         aggiornaInterfacciaGusti();
     }
 
     function eliminaGusto(index) {
-        if(confirm(`Vuoi davvero eliminare il gusto "${gusti[index]}" dalle opzioni? (Le produzioni passate rimarranno salvate)`)) {
+        if(confirm(`Eliminare il gusto "${gusti[index]}"?`)) {
             gusti.splice(index, 1);
             aggiornaInterfacciaGusti();
         }
     }
 
-
-    // --- FUNZIONI PER LA PRODUZIONE ---
     function renderTabellaProduzione() {
         const tbody = document.getElementById('corpo-tabella');
         tbody.innerHTML = '';
@@ -341,13 +412,15 @@
 
         produzioni.forEach((prod, index) => {
             const tr = document.createElement('tr');
+            
+            // L'attributo data-label permette la magia della conversione responsive su iPhone
             tr.innerHTML = `
-                <td>${formattaData(prod.data)}</td>
-                <td><strong>${prod.gusto}</strong></td>
-                <td>${prod.formato}</td>
-                <td>${prod.quantita}</td>
-                <td><code>${prod.lotto}</code></td>
-                <td></td>
+                <td data-label="Data">${formattaData(prod.data)}</td>
+                <td data-label="Gusto"><strong>${prod.gusto}</strong></td>
+                <td data-label="Formato">${prod.formato}</td>
+                <td data-label="Quantità">${prod.quantita}</td>
+                <td data-label="Lotto"><code>${prod.lotto}</code></td>
+                <td data-label="Note / Firma"></td>
                 <td class="Azioni">
                     <button class="btn-warning table-btn" onclick="avviaModificaProduzione(${index})">Modifica</button>
                     <button class="btn-danger table-btn" onclick="eliminaProduzione(${index})">Elimina</button>
@@ -369,68 +442,20 @@
         const lotto = document.getElementById('lotto').value.trim() || "-";
 
         if (!data || isNaN(quantita) || quantita <= 0 || !gusto) {
-            alert("Compila tutti i campi correttamente prima di salvare.");
+            alert("Compila tutti i campi correttamente.");
             return;
         }
 
         const oggettoProduzione = { data, gusto, formato, quantita, lotto };
 
         if (indiceModifica === -1) {
-            // Nuovo inserimento
             produzioni.push(oggettoProduzione);
         } else {
-            // Modifica di una riga esistente
             produzioni[indiceModifica] = oggettoProduzione;
-            indiceModifica = -1; // Resetta lo stato di modifica
-            document.getElementById('btn-salva-prod').innerText = "Registra Produzione";
+            indiceModifica = -1;
+            document.getElementById('btn-salva-prod').innerText = "Registra Production";
             document.getElementById('btn-salva-prod').className = "btn-success";
         }
 
-        // Svuota i campi inserimento
         document.getElementById('quantita').value = 1;
-        document.getElementById('lotto').value = "";
-        
-        renderTabellaProduzione();
-    }
-
-    function avviaModificaProduzione(index) {
-        const prod = produzioni[index];
-        
-        // Riporta i dati nei campi del modulo per essere modificati
-        document.getElementById('data').value = prod.data;
-        document.getElementById('gusto-select').value = prod.gusto;
-        document.getElementById('formato').value = prod.formato;
-        document.getElementById('quantita').value = prod.quantita;
-        document.getElementById('lotto').value = prod.lotto === "-" ? "" : prod.lotto;
-
-        // Cambia la modalità del pulsante in "Modifica"
-        indiceModifica = index;
-        const btn = document.getElementById('btn-salva-prod');
-        btn.innerText = "Applica Modifiche";
-        btn.className = "btn-warning";
-        
-        // Scorre la pagina verso l'alto per mostrare il modulo di modifica
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function eliminaProduzione(index) {
-        if(confirm("Sei sicuro di voler cancellare questa riga di produzione?")) {
-            produzioni.splice(index, 1);
-            // Se stavamo modificando proprio quella riga, annulla la modifica
-            if(indiceModifica === index) {
-                indiceModifica = -1;
-                document.getElementById('btn-salva-prod').innerText = "Registra Produzione";
-                document.getElementById('btn-salva-prod').className = "btn-success";
-            }
-            renderTabellaProduzione();
-        }
-    }
-
-    function formattaData(dataString) {
-        const d = new Date(dataString);
-        return d.toLocaleDateString('it-IT');
-    }
-</script>
-
-</body>
-</html>
+        document.getElementById
