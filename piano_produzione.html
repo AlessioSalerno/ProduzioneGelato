@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -40,7 +41,7 @@
             font-size: 1.4rem;
         }
 
-        /* Layout Responsivo (Mobile First: di base tutto in verticale) */
+        /* Layout Responsivo (Mobile First: tutto in verticale) */
         .sezione-comandi {
             display: flex;
             flex-direction: column;
@@ -81,16 +82,15 @@
         }
 
         input, select {
-            padding: 12px; /* Più grande su mobile per facilitare il tocco */
+            padding: 12px;
             border: 1px solid #ccc;
             border-radius: 4px;
             font-size: 1rem;
             background-color: #fff;
-            -webkit-appearance: none; /* Rimuove lo stile di default di iOS */
+            -webkit-appearance: none;
             appearance: none;
         }
 
-        /* Sistemazione freccia select su iOS */
         select {
             background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'><path d='M0 3l5 5 5-5z' fill='%23666'/></svg>");
             background-repeat: no-repeat;
@@ -98,7 +98,7 @@
             padding-right: 30px;
         }
 
-        /* Pulsanti grandi per le dita */
+        /* Pulsanti */
         button {
             padding: 12px 18px;
             color: white;
@@ -141,8 +141,7 @@
             font-size: 1rem;
         }
 
-        /* ---- OTTIMIZZAZIONE TABELLA PER MOBILE ---- */
-        /* Di default su smartphone la tabella si trasforma in blocchi leggibili */
+        /* ---- TABELLA VERSIONE MOBILE ---- */
         table, thead, tbody, tfoot, th, td, tr {
             display: block;
         }
@@ -175,7 +174,6 @@
             border-bottom: none;
         }
 
-        /* Etichette per mobile inserite tramite i dati della tabella */
         td::before {
             content: attr(data-label);
             position: absolute;
@@ -205,7 +203,6 @@
             flex: 1;
         }
 
-        /* Riga del totale adattata a mobile */
         .totale-riga tr {
             background: #eaeded;
         }
@@ -218,8 +215,8 @@
             display: none;
         }
 
-        /* ---- DESKTOP LAYOUT (Schermi grandi dei PC o Tablet orizzontali) ---- */
-        @media id, screen and (min-width: 768px) {
+        /* ---- VERSION DESKTOP (PC / TABLET) ---- */
+        @media screen and (min-width: 768px) {
             body { padding: 20px; }
             .container { padding: 30px; }
             h1 { font-size: 2.2rem; }
@@ -242,7 +239,6 @@
 
             .btn-primary { width: auto; }
 
-            /* Ripristino Tabella Classica Orizzontale su PC */
             table { display: table; width: 100%; border-collapse: collapse; margin-top: 15px; }
             thead { display: table-header-group; }
             tbody { display: table-row-group; }
@@ -258,14 +254,13 @@
             .totale-riga td { text-align: left !important; font-size: 1rem; }
         }
 
-        /* ---- CSS SPECIFICO PER LA STAMPA ---- */
+        /* ---- VERSION STAMPA ---- */
         @media print {
             @page { size: landscape; margin: 1cm; }
             body { background: white; padding: 0; margin: 0; }
             .sezione-comandi, .btn-primary, .Azioni, th:last-child { display: none !important; }
             .container { box-shadow: none; padding: 0; max-width: 100%; }
             
-            /* Forza la visualizzazione a tabella classica anche se si stampa da mobile */
             table { display: table !important; width: 100%; border-collapse: collapse; }
             thead { display: table-header-group !important; }
             tbody { display: table-row-group !important; }
@@ -413,7 +408,6 @@
         produzioni.forEach((prod, index) => {
             const tr = document.createElement('tr');
             
-            // L'attributo data-label permette la magia della conversione responsive su iPhone
             tr.innerHTML = `
                 <td data-label="Data">${formattaData(prod.data)}</td>
                 <td data-label="Gusto"><strong>${prod.gusto}</strong></td>
@@ -451,11 +445,49 @@
         if (indiceModifica === -1) {
             produzioni.push(oggettoProduzione);
         } else {
+            produzioni[indiceModifica] = objetoProduzione; // Corretto refuso
             produzioni[indiceModifica] = oggettoProduzione;
             indiceModifica = -1;
-            document.getElementById('btn-salva-prod').innerText = "Registra Production";
+            document.getElementById('btn-salva-prod').innerText = "Registra Produzione";
             document.getElementById('btn-salva-prod').className = "btn-success";
         }
 
         document.getElementById('quantita').value = 1;
-        document.getElementById
+        document.getElementById('lotto').value = "";
+        renderTabellaProduzione();
+    }
+
+    function avviaModificaProduzione(index) {
+        const prod = produzioni[index];
+        document.getElementById('data').value = prod.data;
+        document.getElementById('gusto-select').value = prod.gusto;
+        document.getElementById('formato').value = prod.formato;
+        document.getElementById('quantita').value = prod.quantita;
+        document.getElementById('lotto').value = prod.lotto === "-" ? "" : prod.lotto;
+
+        indiceModifica = index;
+        const btn = document.getElementById('btn-salva-prod');
+        btn.innerText = "Applica Modifiche";
+        btn.className = "btn-warning";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function eliminaProduzione(index) {
+        if(confirm("Cancellare questa riga?")) {
+            produzioni.splice(index, 1);
+            if(indiceModifica === index) {
+                indiceModifica = -1;
+                document.getElementById('btn-salva-prod').innerText = "Registra Produzione";
+                document.getElementById('btn-salva-prod').className = "btn-success";
+            }
+            renderTabellaProduzione();
+        }
+    }
+
+    function formattaData(dataString) {
+        const d = new Date(dataString);
+        return d.toLocaleDateString('it-IT');
+    }
+</script>
+</body>
+</html>
